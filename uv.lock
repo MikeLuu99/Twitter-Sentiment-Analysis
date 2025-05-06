@@ -1,0 +1,7 @@
+version = 1
+requires-python = ">=3.10"
+
+[[package]]
+name = "sentiment-analysis-cpsc-370"
+version = "0.1.0"
+source = { virtual = "." }
