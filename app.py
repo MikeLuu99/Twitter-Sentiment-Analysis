@@ -175,7 +175,7 @@ def main():
     st.markdown("Enter text to analyze its sentiment - positive, negative, or neutral.")
 
     # Initialize the model
-    if not (os.path.exists('model.pkl') and os.path.exists('vectorizer.pkl')):
+    if not (os.path.exists('model/model.pkl') and os.path.exists('model/vectorizer.pkl')):
         with st.spinner("Training model for the first time..."):
             model, vectorizer = train_model_from_data('data.csv')
             if model is not None:
