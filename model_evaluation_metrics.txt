@@ -1,0 +1,46 @@
+
+===========================================
+Model Evaluation Metrics
+===========================================
+Timestamp: 2025-05-11 16:43:49
+Model: Logistic Regression
+
+Accuracy: 0.7749
+
+Classification Report:
+              precision    recall  f1-score   support
+
+    negative       0.79      0.75      0.77    160000
+    positive       0.76      0.80      0.78    160000
+
+    accuracy                           0.77    320000
+   macro avg       0.78      0.77      0.77    320000
+weighted avg       0.78      0.77      0.77    320000
+
+
+Confusion Matrix:
+[[120395  39605]
+ [ 32429 127571]]
+
+Top 10 Most Important Features:
+            feature  importance
+3682            sad    9.768177
+612          bummed    6.177736
+3684          sadly    6.040123
+2786           miss    6.013032
+3302           poor    5.872694
+3867           sick    5.613968
+1891         gutted    5.571458
+4612  unfortunately    5.543162
+2789        missing    5.539628
+3617            rip    5.374790
+
+Note:
+- Confusion Matrix Format:
+    [[TN, FP],
+     [FN, TP]]
+- TN: True Negatives
+- FP: False Positives
+- FN: False Negatives
+- TP: True Positives
+===========================================
