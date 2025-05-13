@@ -66,9 +66,22 @@ def predict_sentiment(text, model):
     preprocessed_text = preprocess_text(text)
 
     # Make prediction
-    prediction = model.predict([preprocessed_text])[0]
     probabilities = model.predict_proba([preprocessed_text])[0]
-    confidence = max(probabilities)
+
+    # Get probability for each class
+    # Note: First probability is for negative class, second for positive
+    neg_prob, pos_prob = probabilities * 100
+
+    print(neg_prob, "Negative")
+    print(pos_prob, "Postive")
+
+    # Determine sentiment based on probability ranges
+    if 35 <= pos_prob <= 65:
+        prediction = "neutral"
+        confidence = 1 - abs(0.5 - pos_prob/100)  # Convert confidence to be centered around 0.5
+    else:
+        prediction = "positive" if pos_prob > 65 else "negative"
+        confidence = max(probabilities)
 
     return prediction, confidence
 
@@ -109,8 +122,10 @@ if st.button("Analyze", key='analyze_button'):
                 st.subheader("Sentiment")
                 if prediction == "positive":
                     st.markdown("### 😊 Positive")
-                else:
+                elif prediction == "negative":
                     st.markdown("### 😔 Negative")
+                else:
+                    st.markdown("### 😐 Neutral")
 
             with col2:
                 st.subheader("Confidence")
@@ -119,6 +134,6 @@ if st.button("Analyze", key='analyze_button'):
                     st.text(f"{confidence:.2%}")
                 else:
                     st.text("Confidence: N/A")
-                st.text(f"{confidence:.2%}")
+                # st.text(f"{confidence:.2%}")
     else:
         st.warning("Please enter some text to analyze")

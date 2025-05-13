@@ -56,7 +56,7 @@ Pipeline([
    ```python
    # Preprocess tweet
    preprocessed_text = preprocess_text(tweet)
-   
+
    # Get prediction and confidence
    prediction = model.predict([preprocessed_text])[0]
    confidence = max(model.predict_proba([preprocessed_text])[0])
@@ -154,8 +154,6 @@ with open('sentiment_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
 # Make prediction
-text = "I love this new feature!"
+text = "I love the stock market"
 prediction = model.predict([preprocess_text(text)])[0]
 ```
-
-For more detailed implementation examples, refer to `app.py` and `train_model.py`.

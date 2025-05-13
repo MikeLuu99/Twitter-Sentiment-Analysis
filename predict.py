@@ -46,13 +46,23 @@ def load_model(model_path='sentiment_model.pkl'):
         return None
 
 def predict_sentiment(text, model):
-
     # Preprocess the input text
     preprocessed_text = preprocess_text(text)
 
     # Make prediction
-    prediction = model.predict([preprocessed_text])[0]
-    probability = max(model.predict_proba([preprocessed_text])[0])
+    probabilities = model.predict_proba([preprocessed_text])[0]
+    
+    # Get probability for each class
+    # Note: First probability is for negative class, second for positive
+    neg_prob, pos_prob = probabilities * 100
+    
+    # Determine sentiment based on probability ranges
+    if 40 <= pos_prob <= 60:
+        prediction = "neutral"
+        probability = 1 - abs(0.5 - pos_prob/100)  # Convert confidence to be centered around 0.5
+    else:
+        prediction = "positive" if pos_prob > 60 else "negative"
+        probability = max(probabilities)
 
     return prediction, probability
 
@@ -61,8 +71,20 @@ def predict_batch(texts, model):
     preprocessed_texts = [preprocess_text(text) for text in texts]
 
     # Make predictions
-    predictions = model.predict(preprocessed_texts)
-    probabilities = [max(proba) for proba in model.predict_proba(preprocessed_texts)]
+    all_probabilities = model.predict_proba(preprocessed_texts)
+    
+    predictions = []
+    probabilities = []
+    
+    for probs in all_probabilities:
+        neg_prob, pos_prob = probs * 100
+        
+        if 40 <= pos_prob <= 60:
+            predictions.append("neutral")
+            probabilities.append(1 - abs(0.5 - pos_prob/100))
+        else:
+            predictions.append("positive" if pos_prob > 60 else "negative")
+            probabilities.append(max(probs))
 
     return predictions, probabilities
 
