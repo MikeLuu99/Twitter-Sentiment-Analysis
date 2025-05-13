@@ -7,14 +7,15 @@ from nltk.stem import WordNetLemmatizer
 import re
 
 # Download required NLTK data
-nltk.download('punkt', quiet=True)
-nltk.download('stopwords', quiet=True)
-nltk.download('wordnet', quiet=True)
-nltk.download('omw-1.4', quiet=True)
+def download_nltk_data(quiet=True):
+    nltk.download('punkt', quiet=quiet)
+    nltk.download('stopwords', quiet=quiet)
+    nltk.download('wordnet', quiet=quiet)
+    nltk.download('omw-1.4', quiet=quiet)
 
 def preprocess_text(text):
     # Convert to lowercase
-    text = text.lower()
+    text = str(text).lower()
 
     # Remove URLs
     text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
@@ -42,31 +43,39 @@ def load_model(model_path='sentiment_model.pkl'):
             model = pickle.load(f)
         return model
     except FileNotFoundError:
-        print(f"Error: Model file '{model_path}' not found. Please ensure you have trained the model first.")
         return None
 
-def predict_sentiment(text, model):
-    # Preprocess the input text
-    preprocessed_text = preprocess_text(text)
-
-    # Make prediction
-    probabilities = model.predict_proba([preprocessed_text])[0]
-    
-    # Get probability for each class
-    # Note: First probability is for negative class, second for positive
+def get_sentiment_from_probabilities(probabilities):
+    """Convert model probabilities into sentiment prediction and confidence score."""
     neg_prob, pos_prob = probabilities * 100
     
     # Determine sentiment based on probability ranges
     if 40 <= pos_prob <= 60:
         prediction = "neutral"
-        probability = 1 - abs(0.5 - pos_prob/100)  # Convert confidence to be centered around 0.5
+        confidence = 1 - abs(0.5 - pos_prob/100)  # Convert confidence to be centered around 0.5
     else:
         prediction = "positive" if pos_prob > 60 else "negative"
-        probability = max(probabilities)
+        confidence = max(probabilities)
+    
+    return prediction, confidence
 
-    return prediction, probability
+def predict_sentiment(text, model):
+    """Predict sentiment for a single piece of text."""
+    if model is None:
+        return None, None
+
+    # Preprocess the input text
+    preprocessed_text = preprocess_text(text)
+
+    # Make prediction
+    probabilities = model.predict_proba([preprocessed_text])[0]
+    return get_sentiment_from_probabilities(probabilities)
 
 def predict_batch(texts, model):
+    """Predict sentiment for multiple texts."""
+    if model is None:
+        return [], []
+
     # Preprocess all texts
     preprocessed_texts = [preprocess_text(text) for text in texts]
 
@@ -74,24 +83,40 @@ def predict_batch(texts, model):
     all_probabilities = model.predict_proba(preprocessed_texts)
     
     predictions = []
-    probabilities = []
+    confidences = []
     
     for probs in all_probabilities:
-        neg_prob, pos_prob = probs * 100
-        
-        if 40 <= pos_prob <= 60:
-            predictions.append("neutral")
-            probabilities.append(1 - abs(0.5 - pos_prob/100))
-        else:
-            predictions.append("positive" if pos_prob > 60 else "negative")
-            probabilities.append(max(probs))
+        prediction, confidence = get_sentiment_from_probabilities(probs)
+        predictions.append(prediction)
+        confidences.append(confidence)
 
-    return predictions, probabilities
+    return predictions, confidences
+
+def process_csv_file(file_path, model):
+    """Process a CSV file containing text data and return predictions."""
+    try:
+        df = pd.read_csv(file_path)
+        if 'text' not in df.columns:
+            raise ValueError("CSV file must contain a 'text' column")
+
+        predictions, confidences = predict_batch(df['text'].tolist(), model)
+
+        # Add predictions to DataFrame
+        df['predicted_sentiment'] = predictions
+        df['confidence'] = confidences
+
+        return df
+    except Exception as e:
+        raise Exception(f"Error processing file: {str(e)}")
 
 def main():
+    # Download NLTK data
+    download_nltk_data()
+
     # Load the trained model
     model = load_model()
     if model is None:
+        print("Error: Model file 'sentiment_model.pkl' not found. Please ensure you have trained the model first.")
         return
 
     print("Sentiment Analysis Predictor")
@@ -108,30 +133,24 @@ def main():
         elif user_input.lower() == 'f':
             file_path = input("Enter the path to your CSV file (should have a 'text' column): ")
             try:
-                df = pd.read_csv(file_path)
-                if 'text' not in df.columns:
-                    print("Error: CSV file must contain a 'text' column")
-                    continue
-
-                predictions, probabilities = predict_batch(df['text'].tolist(), model)
-
-                # Add predictions to DataFrame
-                df['predicted_sentiment'] = predictions
-                df['confidence'] = probabilities
-
+                df = process_csv_file(file_path, model)
+                
                 # Save results
                 output_path = file_path.rsplit('.', 1)[0] + '_predictions.csv'
                 df.to_csv(output_path, index=False)
                 print(f"Predictions saved to: {output_path}")
 
             except Exception as e:
-                print(f"Error processing file: {str(e)}")
+                print(str(e))
 
         else:
             # Single text prediction
-            prediction, probability = predict_sentiment(user_input, model)
-            print(f"\nPredicted Sentiment: {prediction}")
-            print(f"Confidence: {probability:.2f}")
+            prediction, confidence = predict_sentiment(user_input, model)
+            if prediction:
+                print(f"\nPredicted Sentiment: {prediction}")
+                print(f"Confidence: {confidence:.2f}")
+            else:
+                print("Error: Could not make prediction")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,75 @@
+
+===========================================
+Model Evaluation Results on Test Data
+===========================================
+Timestamp: 2025-05-13 16:55:13
+
+Basic Accuracy Metrics:
+- Total predictions: 20
+- Correct predictions: 9
+- Incorrect predictions: 11
+- Accuracy: 45.00%
+
+Prediction Distribution:
+- Positive: 6 (30.0%)
+- Negative: 8 (40.0%)
+- Neutral:  6 (30.0%)
+
+Incorrect Predictions:
+
+Text: "Oh fantastic, another bug. Just what I needed."
+- Predicted: positive
+- Actual: negative
+- Confidence: 74.04%
+
+Text: "The design is beautiful, but the app crashes too much."
+- Predicted: positive
+- Actual: negative
+- Confidence: 60.88%
+
+Text: "I don’t hate it."
+- Predicted: negative
+- Actual: positive
+- Confidence: 99.20%
+
+Text: "Yeah, this app is so fast — it only froze five times today."
+- Predicted: neutral
+- Actual: negative
+- Confidence: 91.45%
+
+Text: "The customer service was slow, but the representative was kind."
+- Predicted: negative
+- Actual: neutral
+- Confidence: 60.66%
+
+Text: "It’s not bad at all."
+- Predicted: negative
+- Actual: positive
+- Confidence: 95.82%
+
+Text: "I wouldn’t say it’s great."
+- Predicted: positive
+- Actual: neutral
+- Confidence: 84.79%
+
+Text: "meh."
+- Predicted: neutral
+- Actual: negative
+- Confidence: 90.20%
+
+Text: "The onboarding was clear, the UI was polished, and overall the app functioned well — though it could use a few speed improvements."
+- Predicted: neutral
+- Actual: positive
+- Confidence: 93.25%
+
+Text: "This update is a huge improvement!"
+- Predicted: neutral
+- Actual: positive
+- Confidence: 94.67%
+
+Text: "Could be worse, I guess."
+- Predicted: negative
+- Actual: neutral
+- Confidence: 88.30%
+
+===========================================
