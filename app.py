@@ -114,7 +114,11 @@ if st.button("Analyze", key='analyze_button'):
 
             with col2:
                 st.subheader("Confidence")
-                st.progress(confidence)
+                if confidence is not None:
+                    st.progress(confidence)
+                    st.text(f"{confidence:.2%}")
+                else:
+                    st.text("Confidence: N/A")
                 st.text(f"{confidence:.2%}")
     else:
         st.warning("Please enter some text to analyze")

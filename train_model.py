@@ -1,17 +1,17 @@
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import Pipeline
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 import pickle
 import re
+from datetime import datetime
+
 import nltk
-from nltk.tokenize import word_tokenize
+import pandas as pd
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from datetime import datetime
+from nltk.tokenize import word_tokenize
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
 
 # Download required NLTK data
 nltk.download('punkt')
@@ -137,7 +137,7 @@ def main():
 
         # Preprocess the tweets
         print("Preprocessing tweets...")
-        df['cleaned_text'] = df['text'].astype(str).apply(preprocess_text)
+        df['cleaned_text'] = [preprocess_text(text) for text in df['text'].astype(str)]
 
         # Split features and target
         X = df['cleaned_text']
