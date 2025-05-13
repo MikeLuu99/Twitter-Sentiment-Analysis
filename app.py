@@ -79,10 +79,6 @@ st.set_page_config(
 )
 
 st.title("Twitter Sentiment Analysis 🐦")
-st.markdown("""
-This app analyzes the sentiment of tweets using machine learning.
-Enter your tweet below and click 'Analyze' to see the results.
-""")
 
 # Load the model at startup
 model = load_model()
