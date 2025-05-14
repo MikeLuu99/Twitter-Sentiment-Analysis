@@ -1,12 +1,12 @@
 import pickle
-import pandas as pd
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import re
+import numpy as np
+import pandas as pd
 
-# Download required NLTK data
 def download_nltk_data(quiet=True):
     nltk.download('punkt', quiet=quiet)
     nltk.download('stopwords', quiet=quiet)
@@ -108,49 +108,3 @@ def process_csv_file(file_path, model):
         return df
     except Exception as e:
         raise Exception(f"Error processing file: {str(e)}")
-
-def main():
-    # Download NLTK data
-    download_nltk_data()
-
-    # Load the trained model
-    model = load_model()
-    if model is None:
-        print("Error: Model file 'sentiment_model.pkl' not found. Please ensure you have trained the model first.")
-        return
-
-    print("Sentiment Analysis Predictor")
-    print("Enter 'q' to quit")
-    print("Enter 'f' to predict from a file")
-    print("Or type your text for prediction")
-
-    while True:
-        user_input = input("\nEnter your choice: ").strip()
-
-        if user_input.lower() == 'q':
-            break
-
-        elif user_input.lower() == 'f':
-            file_path = input("Enter the path to your CSV file (should have a 'text' column): ")
-            try:
-                df = process_csv_file(file_path, model)
-                
-                # Save results
-                output_path = file_path.rsplit('.', 1)[0] + '_predictions.csv'
-                df.to_csv(output_path, index=False)
-                print(f"Predictions saved to: {output_path}")
-
-            except Exception as e:
-                print(str(e))
-
-        else:
-            # Single text prediction
-            prediction, confidence = predict_sentiment(user_input, model)
-            if prediction:
-                print(f"\nPredicted Sentiment: {prediction}")
-                print(f"Confidence: {confidence:.2f}")
-            else:
-                print("Error: Could not make prediction")
-
-if __name__ == "__main__":
-    main()

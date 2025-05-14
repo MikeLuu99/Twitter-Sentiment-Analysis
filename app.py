@@ -1,5 +1,5 @@
 import streamlit as st
-from predict import (
+from src.models.sentiment_model import (
     download_nltk_data,
     load_model,
     predict_sentiment,

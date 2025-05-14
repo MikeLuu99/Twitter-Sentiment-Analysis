@@ -1,23 +1,91 @@
-# Twitter Sentiment Analysis with LogisticRegression
+# Twitter Sentiment Analysis
 
-A machine learning application for real-time sentiment analysis of tweets using LogisticRegression, scikit-learn, and NLTK, wrapped in a Streamlit web interface.
+A machine learning application that performs real-time sentiment analysis of text using LogisticRegression, scikit-learn, and NLTK, wrapped in a Streamlit web interface.
 
-## Architecture Overview
+## Project Structure
 
-### Training Pipeline
 ```
-Raw Tweet → Text Preprocessing → Feature Extraction → Model Training → Evaluation → Serialization
+twitter-sentiment-analysis/
+├── src/
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── sentiment_model.py    # Core sentiment analysis functionality
+│   └── utils/
+│       ├── __init__.py
+│       └── data_processing.py    # Data loading and metrics utilities
+├── scripts/
+│   ├── train_model.py           # Model training script
+│   └── evaluate_model.py        # Model evaluation script
+├── test/
+│   ├── __init__.py
+│   └── test_predict.py          # Unit tests
+├── app.py                       # Streamlit web interface
+├── sentiment_model.pkl          # Trained model
+├── test.csv                     # Test dataset
+└── requirements.txt            # Project dependencies
 ```
 
-#### 1. Text Preprocessing
-- Lowercase conversion
-- URL removal using regex
-- Special character and number removal
-- Tokenization using NLTK
-- Stopword removal (NLTK English stopwords)
-- Lemmatization with WordNetLemmatizer
+## Features
 
-#### 2. Feature Engineering Pipeline
+- Real-time sentiment analysis of text input
+- Classification into Positive, Negative, or Neutral sentiment
+- Confidence scores for predictions
+- Web interface with emoji feedback
+- Batch processing capability for CSV files
+- Comprehensive test suite
+
+## Installation
+
+1. Create and activate a virtual environment:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
+
+2. Install dependencies:
+   ```bash
+   uv pip install -r requirements.txt
+   ```
+
+## Usage
+
+### Web Interface
+
+Run the Streamlit app:
+```bash
+streamlit run app.py
+```
+
+### Training
+
+To train a new model:
+```bash
+python scripts/train_model.py
+```
+
+This will:
+- Load and preprocess the training dataset
+- Train a LogisticRegression model
+- Save the model as 'sentiment_model.pkl'
+- Generate performance metrics
+
+### Evaluation
+
+To evaluate the model on test data:
+```bash
+python scripts/evaluate_model.py
+```
+
+### Running Tests
+
+```bash
+python -m pytest test/test_predict.py -v
+```
+
+## Technical Details
+
+### Model Pipeline
+
 ```python
 Pipeline([
     ('vectorizer', CountVectorizer(max_features=5000)),
@@ -31,82 +99,25 @@ Pipeline([
 ])
 ```
 
-- **CountVectorizer**: Converts text to token counts (max 5000 features)
-- **TF-IDF Transformer**: Converts counts to TF-IDF representations
-- **LogisticRegression**: Binary classifier with balanced class weights
+### Text Preprocessing
 
-### Model Details
+- Lowercase conversion
+- URL removal
+- Special character and number removal
+- Tokenization (NLTK)
+- Stopword removal
+- Lemmatization (WordNetLemmatizer)
 
-- **Algorithm**: Logistic Regression
-- **Features**: TF-IDF vectors (max 5000 features)
-- **Training Split**: 80% training, 20% testing (stratified)
-- **Class Weights**: Balanced
-- **Parallel Processing**: Enabled (n_jobs=-1)
-- **Max Iterations**: 1000
+### Sentiment Classification
 
-### Prediction Process
+- **Positive**: Probability > 60%
+- **Negative**: Probability < 40%
+- **Neutral**: Probability between 40-60%
 
-1. **Model Loading**:
-   ```python
-   with open('sentiment_model.pkl', 'rb') as f:
-       model = pickle.load(f)
-   ```
+### Performance Metrics
 
-2. **Single Tweet Prediction**:
-   ```python
-   # Preprocess tweet
-   preprocessed_text = preprocess_text(tweet)
-
-   # Get prediction and confidence
-   prediction = model.predict([preprocessed_text])[0]
-   confidence = max(model.predict_proba([preprocessed_text])[0])
-   ```
-
-## Project Structure
-
-```
-twitter-sentiment-analysis/
-├── train_model.py          # Training script
-├── app.py                  # Streamlit interface
-├── sentiment_model.pkl     # Serialized model
-├── model_evaluation_metrics.txt  # Performance metrics
-└── requirements.txt        # Dependencies
-```
-
-## Installation & Usage
-
-1. **Install Dependencies**:
-   ```bash
-   uv pip install -r requirements.txt
-   ```
-
-2. **Train Model**:
-   ```bash
-   uv run train_model.py
-   ```
-   This creates:
-   - `sentiment_model.pkl`: Trained model
-   - `model_evaluation_metrics.txt`: Performance metrics
-
-3. **Run Web Interface**:
-   ```bash
-   streamlit run app.py
-   ```
-
-## Model Artifacts
-
-### sentiment_model.pkl
-Contains the serialized scikit-learn Pipeline including:
-- Vocabulary from CountVectorizer
-- IDF values from TfidfTransformer
-- LogisticRegression coefficients and intercepts
-
-### model_evaluation_metrics.txt
-Includes:
-- Accuracy score
-- Classification report (precision, recall, F1)
-- Confusion matrix
-- Top 10 most important features based on coefficient magnitudes
+- Model evaluation metrics are saved to 'model_evaluation_metrics.txt'
+- Test results are saved to 'test_evaluation_results.txt'
 
 ## Dependencies
 
@@ -116,35 +127,39 @@ Includes:
 - numpy>=1.26.2
 - streamlit>=1.28.2
 
-## Data Requirements
+## Development
 
-Training data should be a CSV with columns:
-- target (0 for negative, 4 for positive)
-- text (tweet content)
-- Additional columns will be filtered out
+### Running Tests
 
-## Performance Monitoring
+The project uses pytest for testing. Run tests with:
+```bash
+python -m pytest test/test_predict.py -v
+```
 
-The system logs:
-- Training accuracy
-- Feature importance rankings
-- Confusion matrix metrics
-- Per-class precision and recall
+Tests cover:
+- Model loading
+- Sentiment prediction
+- Batch processing
+- CSV file handling
+- Accuracy metrics
 
-## Error Handling
+### Adding New Features
 
-- Robust text preprocessing with fallbacks
-- Multiple encoding attempts for data loading
-- Stratified sampling for balanced evaluation
-- Confidence scores for prediction reliability
+1. Add core functionality to appropriate module in `src/`
+2. Update tests in `test/`
+3. Run test suite to ensure nothing breaks
+4. Update documentation as needed
 
 ## Future Improvements
 
-1. Hyperparameter tuning via grid search
-2. Cross-validation for more robust evaluation
-3. Custom tokenization for Twitter-specific text
-4. Ensemble methods for improved accuracy
-5. Model versioning and performance tracking
+1. Add support for more languages
+2. Implement model versioning
+3. Add API endpoint for predictions
+4. Improve neutral sentiment detection
+5. Add more preprocessing options
+6. Implement cross-validation
+7. Add support for custom models
+8. Enhance error handling and logging
 
 ## API Usage
 

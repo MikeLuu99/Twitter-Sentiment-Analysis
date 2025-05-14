@@ -1,6 +1,10 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.models.sentiment_model import load_model, predict_batch
+from src.utils.data_processing import save_metrics
 import pandas as pd
-from datetime import datetime
-from predict import load_model, predict_batch
 
 def load_test_data(file_path):
     """Load and prepare test data."""
@@ -72,46 +76,6 @@ def evaluate_model(model, test_df):
         'incorrect_cases': incorrect_cases
     }
 
-def save_evaluation_results(metrics, output_file):
-    """Save evaluation results to a file."""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    report = f"""
-===========================================
-Model Evaluation Results on Test Data
-===========================================
-Timestamp: {timestamp}
-
-Basic Accuracy Metrics:
-- Total predictions: {metrics['total']}
-- Correct predictions: {metrics['correct']}
-- Incorrect predictions: {metrics['incorrect']}
-- Accuracy: {metrics['accuracy']:.2%}
-
-Prediction Distribution:
-- Positive: {metrics['predictions']['positive']} ({metrics['predictions']['positive']/metrics['total']*100:.1f}%)
-- Negative: {metrics['predictions']['negative']} ({metrics['predictions']['negative']/metrics['total']*100:.1f}%)
-- Neutral:  {metrics['predictions']['neutral']} ({metrics['predictions']['neutral']/metrics['total']*100:.1f}%)
-
-Incorrect Predictions:
-"""
-    
-    # Add incorrect predictions
-    for case in metrics['incorrect_cases']:
-        report += f"""
-Text: "{case['text']}"
-- Predicted: {case['predicted']}
-- Actual: {case['actual']}
-- Confidence: {case['confidence']:.2%}
-"""
-    
-    report += "\n==========================================="
-    
-    with open(output_file, 'w') as f:
-        f.write(report)
-    
-    print(f"\nEvaluation results have been saved to '{output_file}'")
-
 def main():
     # Load the model
     print("Loading model...")
@@ -133,7 +97,7 @@ def main():
     metrics = evaluate_model(model, test_df)
 
     # Save results
-    save_evaluation_results(metrics, 'test_evaluation_results.txt')
+    save_metrics(metrics, 'test_evaluation_results.txt')
 
 if __name__ == "__main__":
     main()
