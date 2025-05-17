@@ -63,6 +63,8 @@ streamlit run app.py
 Alternatively, access the deployed app on Streamlit Cloud here:
 [https://twitter-sentiment-analysis-cpsc-370.streamlit.app/](https://twitter-sentiment-analysis-cpsc-370.streamlit.app/)
 
+See a demo of the project flow here: [https://youtu.be/T9156m1Cm-g](https://youtu.be/T9156m1Cm-g)
+
 ### Training
 
 To train a new model:
