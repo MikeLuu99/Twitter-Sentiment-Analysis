@@ -60,6 +60,9 @@ Run the Streamlit app:
 streamlit run app.py
 ```
 
+Alternatively, access the deployed app on Streamlit Cloud here:
+[https://twitter-sentiment-analysis-cpsc-370.streamlit.app/](https://twitter-sentiment-analysis-cpsc-370.streamlit.app/)
+
 ### Training
 
 To train a new model:
